@@ -2,3 +2,6 @@
 *.mp3
 *.mp4
 node_modules/
+config.js
+classifier.json
+classifier2.json
