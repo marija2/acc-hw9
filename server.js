@@ -1,18 +1,14 @@
 const bayes = require( 'bayes' );
 const sw = require( 'stopword' );
 const fs = require( 'fs' );
-
 const express = require( 'express' );
 var app = express();
 var server = app.listen( 3000 );
 app.use( express.static( 'public' ) );
-
 var socket = require( 'socket.io' );
 var io = socket( server );
-
 var classifier;
 fs.readFile( './classifier.json', downloadedFile );
-
 const an = /^[0-9a-zA-Z]+$/;
 
 function downloadedFile( error, data ) {

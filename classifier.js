@@ -2,13 +2,10 @@ const Twit = require( 'twit' );
 const request = require ( 'request' );
 const config = require( './config.js' );
 var t = new Twit( config );
-
 var sw = require( 'stopword' );
 var fs = require( 'fs' );
-
 var bayes = require( 'bayes' );
 var classifier = bayes();
-
 const an = /^[0-9a-zA-Z]+$/;
 
 var topics = {
@@ -62,12 +59,11 @@ var topics = {
 
 var nytRequest = "https://api.nytimes.com/svc/search/v2/articlesearch.json?q=";
 var nytKey = '&api-key=QzKFWAujGBho5J5YVIIeYE4sDk1VFgIU';
-
 var index = 0;
 
 for ( let [ key, value ] of Object.entries( topics ) ) {
 
-    // code for getting data from nyt which is preferable, but exceeds the limit so twitter data will be used
+    // code for getting data from nyt instead of from twitter
     /*request ( nytRequest + "{" + key + "}" + nytKey, async function ( error, respose, body ) {
         var data = JSON.parse ( body );
         if ( data.status == "OK" ) {
@@ -83,6 +79,8 @@ for ( let [ key, value ] of Object.entries( topics ) ) {
             }
         } else console.log ( "didn't work" );
     });*/
+
+    // get data from twitter
     t.get ( 'search/tweets', { q: key, count: 100 }, async function ( err, data, response ) {
         try {
             for ( var i = 0; i < data.statuses.length; i++ ){
@@ -90,6 +88,7 @@ for ( let [ key, value ] of Object.entries( topics ) ) {
             }
             index++;
             if ( index == 46 ) {
+                // save classifier
                 fs.writeFile( "./classifier.json", classifier.toJson(), function( err, data ) {
                     if( err ) console.log( err );
                     else console.log( "saved" );
@@ -100,6 +99,7 @@ for ( let [ key, value ] of Object.entries( topics ) ) {
     });
 }
 
+// clean up the text that the classifier "learns"
 function cleanup( tweet ) {
     var clean = [];
     var split = sw.removeStopwords( tweet.split(" ") );
